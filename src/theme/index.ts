@@ -1,21 +1,3 @@
-export const colors = {
-  screen: "#f1f5f9",
-  surface: "#ffffff",
-  surfaceMuted: "#f8fafc",
-  surfaceHighlight: "#f0fdf4",
-  border: "#f1f5f9",
-
-  textPrimary: "#0f172a",
-  textSecondary: "#475569",
-  textMuted: "#64748b",
-  textFaint: "#94a3b8",
-
-  accent: "#22c55e",
-  accentSoft: "#dcfce7",
-  accentSoftText: "#86efac",
-  onAccent: "#ffffff",
-} as const;
-
 export const spacing = {
   xs: 6,
   sm: 8,
@@ -38,3 +20,7 @@ export const shadow = {
     elevation: 4,
   },
 } as const;
+
+export { darkPalette, lightPalette, type Palette } from "./palettes";
+export { ThemeProvider, useTheme, useThemedStyles, type ThemeMode } from "./theme-context";
+export { ThemeToggle } from "./theme-toggle";

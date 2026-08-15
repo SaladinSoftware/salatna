@@ -1,1 +1,2 @@
-export { FALLBACK_PLACE, useDeviceLocation, type Place } from "./use-device-location";
+export { LocationProvider, useLocation } from "./location-context";
+export { FALLBACK_PLACE, describePlace, type Place } from "./use-device-location";

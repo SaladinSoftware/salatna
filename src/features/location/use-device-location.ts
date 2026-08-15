@@ -1,5 +1,6 @@
 import * as Location from "expo-location";
 import { useCallback, useEffect, useState } from "react";
+import { Linking } from "react-native";
 
 import type { Coordinates } from "@/features/prayer-times";
 
@@ -18,16 +19,19 @@ type State = {
   place: Place;
   isLocating: boolean;
   isFallback: boolean;
+  /** False once the OS stops showing the permission dialog. */
+  canAskAgain: boolean;
 };
 
 const INITIAL_STATE: State = {
   place: FALLBACK_PLACE,
   isLocating: true,
   isFallback: true,
+  canAskAgain: true,
 };
 
 /** Turns coordinates into "City, Country". Falls back to the raw numbers. */
-async function describe(coordinates: Coordinates): Promise<string> {
+export async function describePlace(coordinates: Coordinates): Promise<string> {
   try {
     const [address] = await Location.reverseGeocodeAsync(coordinates);
     const city = address?.city ?? address?.subregion ?? address?.region;
@@ -39,11 +43,23 @@ async function describe(coordinates: Coordinates): Promise<string> {
   return `${coordinates.latitude.toFixed(2)}, ${coordinates.longitude.toFixed(2)}`;
 }
 
+/** Emulators often have no live fix, so fall back to the last known one. */
+async function readCoordinates(): Promise<Coordinates | null> {
+  const position =
+    (await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }).catch(
+      () => null,
+    )) ?? (await Location.getLastKnownPositionAsync());
+
+  if (!position) return null;
+  return {
+    latitude: position.coords.latitude,
+    longitude: position.coords.longitude,
+  };
+}
+
 export function useDeviceLocation() {
   const [state, setState] = useState<State>(INITIAL_STATE);
-  const [retryKey, setRetryKey] = useState(0);
-
-  const retry = useCallback(() => setRetryKey((key) => key + 1), []);
+  const [requestKey, setRequestKey] = useState(0);
 
   useEffect(() => {
     let isActive = true;
@@ -51,39 +67,62 @@ export function useDeviceLocation() {
     async function locate() {
       setState((previous) => ({ ...previous, isLocating: true }));
 
-      const { granted } = await Location.requestForegroundPermissionsAsync();
+      const permission = await Location.requestForegroundPermissionsAsync();
       if (!isActive) return;
 
-      if (!granted) {
-        setState({ place: FALLBACK_PLACE, isLocating: false, isFallback: true });
+      if (!permission.granted) {
+        setState({
+          place: FALLBACK_PLACE,
+          isLocating: false,
+          isFallback: true,
+          canAskAgain: permission.canAskAgain,
+        });
         return;
       }
 
-      const position = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Low,
+      const coordinates = await readCoordinates();
+      if (!isActive) return;
+
+      if (!coordinates) {
+        setState({
+          place: FALLBACK_PLACE,
+          isLocating: false,
+          isFallback: true,
+          canAskAgain: true,
+        });
+        return;
+      }
+
+      const label = await describePlace(coordinates);
+      if (!isActive) return;
+
+      setState({
+        place: { coordinates, label },
+        isLocating: false,
+        isFallback: false,
+        canAskAgain: true,
       });
-      if (!isActive) return;
-
-      const coordinates: Coordinates = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      };
-      const label = await describe(coordinates);
-      if (!isActive) return;
-
-      setState({ place: { coordinates, label }, isLocating: false, isFallback: false });
     }
 
     locate().catch(() => {
       if (isActive) {
-        setState({ place: FALLBACK_PLACE, isLocating: false, isFallback: true });
+        setState({ ...INITIAL_STATE, isLocating: false });
       }
     });
 
     return () => {
       isActive = false;
     };
-  }, [retryKey]);
+  }, [requestKey]);
 
-  return { ...state, retry };
+  /** Re-runs the lookup, or sends the user to Settings when the OS won't ask again. */
+  const requestLocation = useCallback(() => {
+    if (!state.canAskAgain) {
+      Linking.openSettings();
+      return;
+    }
+    setRequestKey((key) => key + 1);
+  }, [state.canAskAgain]);
+
+  return { ...state, requestLocation };
 }

@@ -1,24 +1,27 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { colors, radius } from "@/theme";
+import { radius, useTheme, type Palette } from "@/theme";
 import type { PrayerStatus } from "../types";
 
-const variants: Record<PrayerStatus, { bg: string; fg: string }> = {
+const variantFor = (colors: Palette): Record<PrayerStatus, { bg: string; fg: string }> => ({
   current: { bg: colors.accent, fg: colors.onAccent },
   upcoming: { bg: colors.accentSoft, fg: colors.accentSoftText },
   passed: { bg: colors.surfaceMuted, fg: colors.textFaint },
-};
+});
 
 type Props = {
   status: PrayerStatus;
 };
 
 export function StatusBadge({ status }: Props) {
-  const variant = variants[status];
+  const { colors } = useTheme();
+  const variant = variantFor(colors)[status];
 
   return (
     <View style={[styles.badge, { backgroundColor: variant.bg }]}>
-      <Text style={[styles.label, { color: variant.fg }]}>{status.toUpperCase()}</Text>
+      <Text style={[styles.label, { color: variant.fg }]} numberOfLines={1}>
+        {status.toUpperCase()}
+      </Text>
     </View>
   );
 }
@@ -26,13 +29,13 @@ export function StatusBadge({ status }: Props) {
 const styles = StyleSheet.create({
   badge: {
     alignSelf: "flex-start",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: radius.pill,
   },
   label: {
     fontSize: 10,
     fontWeight: "800",
-    letterSpacing: 0.8,
+    letterSpacing: 0.5,
   },
 });

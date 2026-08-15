@@ -1,9 +1,11 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { colors, spacing } from "@/theme";
+import { spacing, useThemedStyles, type Palette } from "@/theme";
 import { columns } from "./columns";
 
 export function PrayerTableHeader() {
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={styles.header}>
       <Text style={[styles.label, columns.name]}>PRAYER</Text>
@@ -14,17 +16,21 @@ export function PrayerTableHeader() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => ({
   header: {
-    flexDirection: "row",
+    flexDirection: "row" as const,
     backgroundColor: colors.surfaceMuted,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.sm,
+    // Matches the rows' reserved accent-bar width so the columns line up.
+    paddingLeft: spacing.xl + 3,
+    paddingRight: spacing.xl,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border,
   },
   label: {
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 1,
+    fontSize: 10,
+    fontWeight: "700" as const,
+    letterSpacing: 1.2,
     color: colors.textFaint,
   },
 });

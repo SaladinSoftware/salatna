@@ -1,6 +1,6 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
-import { colors } from "@/theme";
+import { radius, shadow, spacing, useThemedStyles, type Palette } from "@/theme";
 import type { PrayerDay } from "../types";
 import { PrayerCardHeader } from "./prayer-card-header";
 import { PrayerRow } from "./prayer-row";
@@ -12,6 +12,8 @@ type Props = {
 };
 
 export function PrayerTimesCard({ day, onChangeLocation }: Props) {
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={styles.card}>
       <PrayerCardHeader
@@ -27,8 +29,16 @@ export function PrayerTimesCard({ day, onChangeLocation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => ({
   card: {
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.lg,
+    borderRadius: radius.card,
+    // Clips the table header and the highlighted row to the rounded corners.
+    overflow: "hidden" as const,
     backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadow.card,
   },
 });
