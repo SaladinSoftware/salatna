@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "name": "English",
+    "dir": "ltr"
+  },
+  "app": {
+    "brand": "Tazkir",
+    "tagline": "Your daily prayer companion"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "change": "Change",
+    "search": "Search",
+    "close": "Close",
+    "loading": "Loading…"
+  },
+  "home": {
+    "refresh": "Refresh prayer times",
+    "title": "Today's Prayer Times",
+    "locating": "Finding your location…",
+    "loading": "Loading prayer times…",
+    "errorTitle": "Couldn't load prayer times.",
+    "staleBanner": "Showing saved times — refresh failed.",
+    "columns": {
+      "prayer": "PRAYER",
+      "adhan": "ADHAN",
+      "iqamah": "IQAMAH",
+      "status": "STATUS"
+    }
+  },
+  "next": {
+    "label": "Next prayer",
+    "now": "It is time",
+    "until": "remaining"
+  },
+  "prayers": {
+    "Fajr": "Fajr",
+    "Dhuhr": "Dhuhr",
+    "Asr": "Asr",
+    "Maghrib": "Maghrib",
+    "Isha": "Isha"
+  },
+  "status": {
+    "current": "CURRENT",
+    "upcoming": "UPCOMING",
+    "passed": "PASSED"
+  },
+  "weekdays": {
+    "0": "Sunday",
+    "1": "Monday",
+    "2": "Tuesday",
+    "3": "Wednesday",
+    "4": "Thursday",
+    "5": "Friday",
+    "6": "Saturday"
+  },
+  "time": {
+    "am": "AM",
+    "pm": "PM"
+  },
+  "location": {
+    "title": "Choose a location",
+    "searchPlaceholder": "Search for a city…",
+    "searchHint": "Type a city name, e.g. Damascus",
+    "searching": "Searching…",
+    "noResults": "No places found for \"{query}\".",
+    "searchFailed": "Search failed. Check your connection.",
+    "tapHint": "Tap anywhere on the map to choose a location.",
+    "useThis": "Use this location",
+    "useMyLocation": "Use my current location",
+    "results": "Results"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark"
+  }
+}

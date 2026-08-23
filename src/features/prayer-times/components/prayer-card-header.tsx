@@ -1,36 +1,46 @@
 import { Pressable, Text, View } from "react-native";
 
-import { radius, spacing, useThemedStyles, type Palette } from "@/theme";
+import { formatWeekday, useI18n } from "@/features/i18n";
+import { radius, scaled, spacing, useLayout, useThemedStyles, type Palette } from "@/theme";
 
 type Props = {
   location: string;
-  weekday: string;
+  /** ISO date; the weekday label is derived per locale. */
+  date: string;
   onChangeLocation?: () => void;
 };
 
-export function PrayerCardHeader({ location, weekday, onChangeLocation }: Props) {
+export function PrayerCardHeader({ location, date, onChangeLocation }: Props) {
   const styles = useThemedStyles(createStyles);
+  const { t, isRTL } = useI18n();
+  const { scale } = useLayout();
+
+  const row = isRTL && styles.rowRTL;
+  const align = { textAlign: isRTL ? ("right" as const) : ("left" as const) };
 
   return (
     <View style={styles.header}>
-      <View style={styles.titleRow}>
-        <Text style={styles.title}>Today&apos;s Prayer Times</Text>
+      <View style={[styles.titleRow, row]}>
+        <Text style={[styles.title, align, { fontSize: scaled(21, scale) }]} numberOfLines={2}>
+          {t("home.title")}
+        </Text>
         <View style={styles.weekdayPill}>
-          <Text style={styles.weekday}>{weekday}</Text>
+          <Text style={styles.weekday}>{formatWeekday(date, t)}</Text>
         </View>
       </View>
 
-      <View style={styles.locationRow}>
+      <View style={[styles.locationRow, row]}>
         <Text style={styles.pin}>📍</Text>
-        <Text style={styles.location} numberOfLines={1}>
+        <Text style={[styles.location, align]} numberOfLines={1}>
           {location}
         </Text>
         <Pressable
           accessibilityRole="button"
+          accessibilityLabel={t("common.change")}
           onPress={onChangeLocation}
           hitSlop={8}
           style={styles.changeButton}>
-          <Text style={styles.change}>Change</Text>
+          <Text style={styles.change}>{t("common.change")}</Text>
         </Pressable>
       </View>
     </View>
@@ -48,9 +58,11 @@ const createStyles = (colors: Palette) => ({
     alignItems: "center" as const,
     gap: spacing.md,
   },
+  rowRTL: {
+    flexDirection: "row-reverse" as const,
+  },
   title: {
     flex: 1,
-    fontSize: 22,
     fontWeight: "800" as const,
     letterSpacing: -0.4,
     color: colors.textPrimary,
@@ -80,7 +92,7 @@ const createStyles = (colors: Palette) => ({
     color: colors.textMuted,
   },
   changeButton: {
-    marginLeft: spacing.xs,
+    marginHorizontal: spacing.xs,
     paddingHorizontal: spacing.md,
     paddingVertical: 4,
     borderRadius: radius.pill,

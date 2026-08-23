@@ -9,8 +9,10 @@ type LocationValue = {
   isFallback: boolean;
   canAskAgain: boolean;
   requestLocation: () => void;
-  /** Overrides the device location, e.g. after picking a spot on the map. */
+  /** Overrides the device location, e.g. after picking a search result. */
   selectPlace: (place: Place) => void;
+  /** Drops the manual choice and goes back to following the device. */
+  followDevice: () => void;
 };
 
 const LocationContext = createContext<LocationValue | null>(null);
@@ -27,6 +29,10 @@ export function LocationProvider({ children }: { children: ReactNode }) {
       canAskAgain: device.canAskAgain,
       requestLocation: device.requestLocation,
       selectPlace: setSelected,
+      followDevice: () => {
+        setSelected(null);
+        device.requestLocation();
+      },
     }),
     [selected, device],
   );

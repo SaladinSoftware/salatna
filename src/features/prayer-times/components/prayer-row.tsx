@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { spacing, useThemedStyles, type Palette } from "@/theme";
+import { formatTime, useI18n } from "@/features/i18n";
+import { scaled, spacing, useLayout, useThemedStyles, type Palette } from "@/theme";
 import type { Prayer } from "../types";
-import { columns } from "./columns";
+import { useColumns } from "./columns";
 import { StatusBadge } from "./status-badge";
 
 type Props = {
@@ -11,19 +12,36 @@ type Props = {
 
 export function PrayerRow({ prayer }: Props) {
   const styles = useThemedStyles(createStyles);
+  const columns = useColumns();
+  const { scale } = useLayout();
+  const { t, isRTL } = useI18n();
+
   const isCurrent = prayer.status === "current";
   const isPassed = prayer.status === "passed";
+  const time = formatTime(prayer.time24, t);
+  const align = { textAlign: isRTL ? ("right" as const) : ("left" as const) };
+  const size = { fontSize: scaled(15, scale) };
 
   return (
-    <View style={[styles.row, isCurrent && styles.rowCurrent]}>
+    <View
+      style={[
+        styles.row,
+        isRTL && styles.rowRTL,
+        isCurrent && styles.rowCurrent,
+        isCurrent && isRTL && styles.rowCurrentRTL,
+      ]}>
       <Text
-        style={[styles.cell, styles.name, isPassed && styles.dimmed, columns.name]}
+        style={[styles.cell, styles.name, size, align, isPassed && styles.dimmed, columns.name]}
         numberOfLines={1}>
-        {prayer.name}
+        {t(`prayers.${prayer.name}`)}
       </Text>
-      <Text style={[styles.cell, isPassed && styles.dimmed, columns.adhan]}>{prayer.adhan}</Text>
-      <Text style={[styles.cell, styles.cellMuted, columns.iqamah]}>{prayer.iqamah}</Text>
-      <View style={columns.status}>
+      <Text style={[styles.cell, size, align, isPassed && styles.dimmed, columns.adhan]}>
+        {time}
+      </Text>
+      {columns.showIqamah && (
+        <Text style={[styles.cell, styles.cellMuted, size, align, columns.iqamah]}>{time}</Text>
+      )}
+      <View style={[columns.status, isRTL && styles.statusRTL]}>
         <StatusBadge status={prayer.status} />
       </View>
     </View>
@@ -41,13 +59,24 @@ const createStyles = (colors: Palette) => ({
     // Reserved so the accent bar on the current row doesn't shift the columns.
     borderLeftWidth: 3,
     borderLeftColor: "transparent",
+    borderRightWidth: 3,
+    borderRightColor: "transparent",
+  },
+  rowRTL: {
+    flexDirection: "row-reverse" as const,
   },
   rowCurrent: {
     backgroundColor: colors.surfaceHighlight,
     borderLeftColor: colors.accent,
   },
+  rowCurrentRTL: {
+    borderLeftColor: "transparent",
+    borderRightColor: colors.accent,
+  },
+  statusRTL: {
+    alignItems: "flex-end" as const,
+  },
   cell: {
-    fontSize: 15,
     fontWeight: "600" as const,
     color: colors.textPrimary,
   },

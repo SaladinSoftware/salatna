@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 
+import { useI18n } from "@/features/i18n";
 import { radius, useTheme, type Palette } from "@/theme";
 import type { PrayerStatus } from "../types";
 
@@ -15,12 +16,13 @@ type Props = {
 
 export function StatusBadge({ status }: Props) {
   const { colors } = useTheme();
+  const { t } = useI18n();
   const variant = variantFor(colors)[status];
 
   return (
     <View style={[styles.badge, { backgroundColor: variant.bg }]}>
       <Text style={[styles.label, { color: variant.fg }]} numberOfLines={1}>
-        {status.toUpperCase()}
+        {t(`status.${status}`)}
       </Text>
     </View>
   );

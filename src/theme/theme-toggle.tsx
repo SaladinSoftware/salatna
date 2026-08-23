@@ -1,33 +1,37 @@
 import { Pressable, Text, View } from "react-native";
 
+import { useI18n } from "@/features/i18n";
+
 import type { Palette } from "./palettes";
 import { useTheme, useThemedStyles, type ThemeMode } from "./theme-context";
 
-const OPTIONS: { mode: ThemeMode; icon: string; label: string }[] = [
-  { mode: "light", icon: "☀️", label: "Light" },
-  { mode: "dark", icon: "🌙", label: "Dark" },
+const OPTIONS: { mode: ThemeMode; icon: string; key: string }[] = [
+  { mode: "light", icon: "☀️", key: "settings.light" },
+  { mode: "dark", icon: "🌙", key: "settings.dark" },
 ];
 
 /** Segmented Light / Dark switch. */
 export function ThemeToggle() {
   const { mode, setMode } = useTheme();
+  const { t } = useI18n();
   const styles = useThemedStyles(createStyles);
 
   return (
     <View style={styles.track}>
       {OPTIONS.map((option) => {
         const isActive = option.mode === mode;
+        const label = t(option.key);
 
         return (
           <Pressable
             key={option.mode}
             accessibilityRole="button"
             accessibilityState={{ selected: isActive }}
-            accessibilityLabel={`${option.label} theme`}
+            accessibilityLabel={label}
             onPress={() => setMode(option.mode)}
             style={[styles.segment, isActive && styles.segmentActive]}>
             <Text style={styles.icon}>{option.icon}</Text>
-            <Text style={[styles.label, isActive && styles.labelActive]}>{option.label}</Text>
+            <Text style={[styles.label, isActive && styles.labelActive]}>{label}</Text>
           </Pressable>
         );
       })}

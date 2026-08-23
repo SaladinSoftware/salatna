@@ -1,10 +1,21 @@
 import { router } from "expo-router";
+import { Image } from "expo-image";
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { LanguageToggle, useI18n } from "@/features/i18n";
 import { useLocation } from "@/features/location";
-import { PrayerTimesCard, usePrayerTimes } from "@/features/prayer-times";
-import { radius, spacing, ThemeToggle, useTheme, useThemedStyles, type Palette } from "@/theme";
+import { NextPrayerHero, PrayerTimesCard, usePrayerTimes } from "@/features/prayer-times";
+import {
+  radius,
+  scaled,
+  spacing,
+  ThemeToggle,
+  useLayout,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from "@/theme";
 
 export default function PrayerTimesScreen() {
   const { place, isLocating } = useLocation();
@@ -13,14 +24,23 @@ export default function PrayerTimesScreen() {
     place.label,
   );
   const { colors } = useTheme();
+  const { t, isRTL } = useI18n();
+  const { gutter, scale, isWide, maxContentWidth } = useLayout();
   const styles = useThemedStyles(createStyles);
 
   const isFirstLoad = isLocating || isLoading;
+  const rowDirection = { flexDirection: isRTL ? ("row-reverse" as const) : ("row" as const) };
+  const content = [
+    styles.content,
+    { paddingHorizontal: gutter, maxWidth: maxContentWidth, alignSelf: "center" as const },
+  ];
 
   return (
     <SafeAreaView style={styles.screen} edges={["top"]}>
       <ScrollView
         style={styles.screen}
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -30,48 +50,55 @@ export default function PrayerTimesScreen() {
             progressBackgroundColor={colors.surface}
           />
         }>
-        <View style={styles.brandRow}>
-          <Text style={styles.brand}>Tazkir</Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Refresh prayer times"
-            onPress={reload}
-            disabled={isFirstLoad || isRefreshing}
-            hitSlop={8}
-            style={styles.refresh}>
-            <Text style={styles.refreshIcon}>⟳</Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.toolbar}>
-          <ThemeToggle />
-        </View>
-
-        {isFirstLoad && (
-          <View style={styles.centered}>
-            <ActivityIndicator size="large" color={colors.accent} />
-            <Text style={styles.message}>
-              {isLocating ? "Finding your location…" : "Loading prayer times…"}
-            </Text>
+        <View style={content}>
+          <View style={[styles.brandRow, rowDirection]}>
+            <View style={styles.brandBlock}>
+              <Text style={[styles.brand, { fontSize: scaled(28, scale) }]}>{t("app.brand")}</Text>
+              <Text style={styles.tagline}>{t("app.tagline")}</Text>
+            </View>
+            {/* Decorative only — refreshing is handled by pull-to-refresh. */}
+            <Image
+              source={require("../../assets/images/logo-glow.png")}
+              style={styles.logo}
+              contentFit="contain"
+              accessibilityIgnoresInvertColors
+            />
           </View>
-        )}
 
-        {!isFirstLoad && error && !day && (
-          <View style={styles.centered}>
-            <Text style={styles.message}>Couldn&apos;t load prayer times.</Text>
-            <Text style={styles.detail}>{error}</Text>
-            <Pressable style={styles.retry} onPress={reload}>
-              <Text style={styles.retryText}>Try again</Text>
-            </Pressable>
+          <View style={[styles.toolbar, rowDirection, isWide && styles.toolbarWide]}>
+            <ThemeToggle />
+            <LanguageToggle />
           </View>
-        )}
 
-        {!isFirstLoad && day && (
-          <>
-            {error && <Text style={styles.banner}>Showing saved times — refresh failed.</Text>}
-            <PrayerTimesCard day={day} onChangeLocation={() => router.push("/pick-location")} />
-          </>
-        )}
+          {isFirstLoad && (
+            <View style={styles.centered}>
+              <ActivityIndicator size="large" color={colors.accent} />
+              <Text style={styles.message}>
+                {isLocating ? t("home.locating") : t("home.loading")}
+              </Text>
+            </View>
+          )}
+
+          {!isFirstLoad && error && !day && (
+            <View style={styles.centered}>
+              <Text style={styles.message}>{t("home.errorTitle")}</Text>
+              <Text style={styles.detail}>{error}</Text>
+              <Pressable style={styles.retry} onPress={reload}>
+                <Text style={styles.retryText}>{t("common.retry")}</Text>
+              </Pressable>
+            </View>
+          )}
+
+          {!isFirstLoad && day && (
+            <>
+              {error && <Text style={styles.banner}>{t("home.staleBanner")}</Text>}
+              <View style={{ marginTop: gutter }}>
+                <NextPrayerHero day={day} />
+              </View>
+              <PrayerTimesCard day={day} onChangeLocation={() => router.push("/pick-location")} />
+            </>
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -82,38 +109,45 @@ const createStyles = (colors: Palette) => ({
     flex: 1,
     backgroundColor: colors.screen,
   },
+  scroll: {
+    paddingBottom: 40,
+  },
+  content: {
+    width: "100%" as const,
+  },
   brandRow: {
-    flexDirection: "row" as const,
     alignItems: "center" as const,
     justifyContent: "space-between" as const,
-    paddingHorizontal: spacing.xl,
-    paddingTop: 32,
+    paddingTop: spacing.xl,
+    gap: spacing.md,
+  },
+  brandBlock: {
+    flex: 1,
+    gap: 2,
   },
   brand: {
-    fontSize: 28,
     fontWeight: "800" as const,
     letterSpacing: -0.5,
     color: colors.textPrimary,
   },
+  tagline: {
+    fontSize: 13,
+    color: colors.textMuted,
+  },
   toolbar: {
-    flexDirection: "row" as const,
     alignItems: "center" as const,
-    paddingHorizontal: spacing.xl,
+    justifyContent: "space-between" as const,
+    flexWrap: "wrap" as const,
+    gap: spacing.sm,
     paddingTop: spacing.lg,
   },
-  refresh: {
-    width: 40,
-    height: 40,
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
-    borderRadius: radius.pill,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
+  toolbarWide: {
+    justifyContent: "flex-start" as const,
+    gap: spacing.lg,
   },
-  refreshIcon: {
-    fontSize: 18,
-    color: colors.textSecondary,
+  logo: {
+    width: 48,
+    height: 48,
   },
   centered: {
     alignItems: "center" as const,
@@ -123,6 +157,7 @@ const createStyles = (colors: Palette) => ({
   message: {
     fontSize: 15,
     color: colors.textMuted,
+    textAlign: "center" as const,
   },
   detail: {
     fontSize: 13,
@@ -130,7 +165,6 @@ const createStyles = (colors: Palette) => ({
     textAlign: "center" as const,
   },
   banner: {
-    marginHorizontal: spacing.xl,
     marginTop: spacing.md,
     fontSize: 13,
     color: colors.textMuted,
