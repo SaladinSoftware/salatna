@@ -2,22 +2,24 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { formatTime, useI18n } from "@/features/i18n";
 import { scaled, spacing, useLayout, useThemedStyles, type Palette } from "@/theme";
-import type { Prayer } from "../types";
+import type { Prayer, PrayerStatus } from "../types";
 import { useColumns } from "./columns";
 import { StatusBadge } from "./status-badge";
 
 type Props = {
   prayer: Prayer;
+  /** Derived from the clock by the card, not sent by the API. */
+  status: PrayerStatus;
 };
 
-export function PrayerRow({ prayer }: Props) {
+export function PrayerRow({ prayer, status }: Props) {
   const styles = useThemedStyles(createStyles);
   const columns = useColumns();
   const { scale } = useLayout();
   const { t, isRTL } = useI18n();
 
-  const isCurrent = prayer.status === "current";
-  const isPassed = prayer.status === "passed";
+  const isCurrent = status === "current";
+  const isPassed = status === "passed";
   const time = formatTime(prayer.time24, t);
   const align = { textAlign: isRTL ? ("right" as const) : ("left" as const) };
   const size = { fontSize: scaled(15, scale) };
@@ -42,7 +44,7 @@ export function PrayerRow({ prayer }: Props) {
         <Text style={[styles.cell, styles.cellMuted, size, align, columns.iqamah]}>{time}</Text>
       )}
       <View style={[columns.status, isRTL && styles.statusRTL]}>
-        <StatusBadge status={prayer.status} />
+        <StatusBadge status={status} />
       </View>
     </View>
   );

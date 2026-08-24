@@ -1,4 +1,4 @@
-import type { Prayer } from "./types";
+import type { Prayer, PrayerStatus } from "./types";
 
 const DAY_SECONDS = 24 * 60 * 60;
 
@@ -41,4 +41,28 @@ export function findNextPrayer(prayers: Prayer[], now: Date): NextPrayer | null 
   const progress = interval > 0 ? 1 - secondsAway / interval : 1;
 
   return { prayer: next, secondsAway, progress: Math.max(0, Math.min(1, progress)) };
+}
+
+/**
+ * Statuses derived from the clock instead of the API's `current_prayer`,
+ * which goes out of sync as soon as it reports a key we don't list (and
+ * then marked every prayer "upcoming"). Deriving them here also keeps the
+ * table and the countdown telling the same story.
+ *
+ * Everything already due has passed, except the most recent one, which is
+ * the current prayer. After Isha that stays Isha until Fajr comes round.
+ */
+export function resolveStatuses(prayers: Prayer[], now: Date): PrayerStatus[] {
+  const nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+  const dueIndexes = prayers
+    .map((prayer, index) => ({ index, due: toSeconds(prayer.time24) <= nowSeconds }))
+    .filter((entry) => entry.due)
+    .map((entry) => entry.index);
+
+  const currentIndex = dueIndexes.length > 0 ? dueIndexes[dueIndexes.length - 1] : -1;
+
+  return prayers.map((_, index) => {
+    if (index === currentIndex) return "current";
+    return dueIndexes.includes(index) ? "passed" : "upcoming";
+  });
 }

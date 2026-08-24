@@ -7,7 +7,6 @@ export type Prayer = {
   name: PrayerName;
   /** 24h "HH:MM", so formatting stays a presentation concern. */
   time24: string;
-  status: PrayerStatus;
 };
 
 export type PrayerDay = {
