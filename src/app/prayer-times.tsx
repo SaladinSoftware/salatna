@@ -3,6 +3,7 @@ import { Image } from "expo-image";
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { AboutCard } from "@/features/about";
 import { LanguageToggle, useI18n } from "@/features/i18n";
 import { useLocation } from "@/features/location";
 import { NextPrayerHero, PrayerTimesCard, usePrayerTimes } from "@/features/prayer-times";
@@ -98,6 +99,8 @@ export default function PrayerTimesScreen() {
               <PrayerTimesCard day={day} onChangeLocation={() => router.push("/pick-location")} />
             </>
           )}
+
+          <AboutCard />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -146,8 +149,8 @@ const createStyles = (colors: Palette) => ({
     gap: spacing.lg,
   },
   logo: {
-    width: 48,
-    height: 48,
+    width: 76,
+    height: 76,
   },
   centered: {
     alignItems: "center" as const,

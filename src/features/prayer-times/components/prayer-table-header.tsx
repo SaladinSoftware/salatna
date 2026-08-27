@@ -8,16 +8,17 @@ export function PrayerTableHeader() {
   const styles = useThemedStyles(createStyles);
   const columns = useColumns();
   const { t, isRTL } = useI18n();
-  const align = { textAlign: isRTL ? ("right" as const) : ("left" as const) };
 
   return (
     <View style={[styles.header, isRTL && styles.headerRTL]}>
-      <Text style={[styles.label, align, columns.name]}>{t("home.columns.prayer")}</Text>
-      <Text style={[styles.label, align, columns.adhan]}>{t("home.columns.adhan")}</Text>
-      {columns.showIqamah && (
-        <Text style={[styles.label, align, columns.iqamah]}>{t("home.columns.iqamah")}</Text>
-      )}
-      <Text style={[styles.label, align, columns.status]}>{t("home.columns.status")}</Text>
+      {columns.map((column) => (
+        <View key={column.key} style={column.style}>
+          {/* Letter-spacing breaks Arabic letter joining, so it is Latin-only. */}
+          <Text style={[styles.label, !isRTL && styles.labelTracked, column.text]}>
+            {t(`home.columns.${column.key}`)}
+          </Text>
+        </View>
+      ))}
     </View>
   );
 }
@@ -27,8 +28,8 @@ const createStyles = (colors: Palette) => ({
     flexDirection: "row" as const,
     backgroundColor: colors.surfaceMuted,
     paddingVertical: spacing.sm,
-    // Matches the rows' reserved accent-bar width so the columns line up.
-    paddingHorizontal: spacing.xl + 3,
+    // Matches the card header and the rows' content inset.
+    paddingHorizontal: spacing.xl,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
   },
@@ -36,9 +37,11 @@ const createStyles = (colors: Palette) => ({
     flexDirection: "row-reverse" as const,
   },
   label: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: "700" as const,
-    letterSpacing: 0.8,
     color: colors.textFaint,
+  },
+  labelTracked: {
+    letterSpacing: 0.8,
   },
 });

@@ -33,7 +33,7 @@ const createStyles = (colors: Palette) => ({
     backgroundColor: colors.surface,
   },
   logo: {
-    width: 180,
-    height: 180,
+    width: 260,
+    height: 260,
   },
 });

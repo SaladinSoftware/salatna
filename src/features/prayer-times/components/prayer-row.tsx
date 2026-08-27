@@ -20,9 +20,24 @@ export function PrayerRow({ prayer, status }: Props) {
 
   const isCurrent = status === "current";
   const isPassed = status === "passed";
-  const time = formatTime(prayer.time24, t);
-  const align = { textAlign: isRTL ? ("right" as const) : ("left" as const) };
-  const size = { fontSize: scaled(15, scale) };
+  const size = { fontSize: scaled(18, scale) };
+
+  // Keyed by column so the cells can never drift out of the header's order.
+  const cells = {
+    name: (
+      <Text
+        style={[styles.cell, styles.name, size, isPassed && styles.dimmed]}
+        numberOfLines={1}>
+        {t(`prayers.${prayer.name}`)}
+      </Text>
+    ),
+    adhan: (
+      <Text style={[styles.cell, size, isPassed && styles.dimmed]}>
+        {formatTime(prayer.time24, t)}
+      </Text>
+    ),
+    status: <StatusBadge status={status} />,
+  };
 
   return (
     <View
@@ -32,20 +47,11 @@ export function PrayerRow({ prayer, status }: Props) {
         isCurrent && styles.rowCurrent,
         isCurrent && isRTL && styles.rowCurrentRTL,
       ]}>
-      <Text
-        style={[styles.cell, styles.name, size, align, isPassed && styles.dimmed, columns.name]}
-        numberOfLines={1}>
-        {t(`prayers.${prayer.name}`)}
-      </Text>
-      <Text style={[styles.cell, size, align, isPassed && styles.dimmed, columns.adhan]}>
-        {time}
-      </Text>
-      {columns.showIqamah && (
-        <Text style={[styles.cell, styles.cellMuted, size, align, columns.iqamah]}>{time}</Text>
-      )}
-      <View style={[columns.status, isRTL && styles.statusRTL]}>
-        <StatusBadge status={status} />
-      </View>
+      {columns.map((column) => (
+        <View key={column.key} style={column.style}>
+          {cells[column.key]}
+        </View>
+      ))}
     </View>
   );
 }
@@ -55,7 +61,8 @@ const createStyles = (colors: Palette) => ({
     flexDirection: "row" as const,
     alignItems: "center" as const,
     paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.xl,
+    // Plus the 3px accent-bar border below, this lands on the card header's inset.
+    paddingHorizontal: spacing.xl - 3,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
     // Reserved so the accent bar on the current row doesn't shift the columns.
@@ -75,9 +82,6 @@ const createStyles = (colors: Palette) => ({
     borderLeftColor: "transparent",
     borderRightColor: colors.accent,
   },
-  statusRTL: {
-    alignItems: "flex-end" as const,
-  },
   cell: {
     fontWeight: "600" as const,
     color: colors.textPrimary,
@@ -87,9 +91,5 @@ const createStyles = (colors: Palette) => ({
   },
   dimmed: {
     color: colors.textSecondary,
-  },
-  cellMuted: {
-    fontWeight: "500" as const,
-    color: colors.textFaint,
   },
 });

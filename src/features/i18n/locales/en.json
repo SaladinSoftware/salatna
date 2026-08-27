@@ -23,9 +23,8 @@
     "errorTitle": "Couldn't load prayer times.",
     "staleBanner": "Showing saved times — refresh failed.",
     "columns": {
-      "prayer": "PRAYER",
+      "name": "PRAYER",
       "adhan": "ADHAN",
-      "iqamah": "IQAMAH",
       "status": "STATUS"
     }
   },
@@ -77,5 +76,10 @@
     "theme": "Theme",
     "light": "Light",
     "dark": "Dark"
+  },
+  "about": {
+    "title": "About us",
+    "madeBy": "Made by {organization}, {developer}",
+    "github": "GitHub — InasAlSaabb"
   }
 }

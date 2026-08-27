@@ -23,9 +23,8 @@
     "errorTitle": "تعذّر تحميل مواقيت الصلاة.",
     "staleBanner": "تُعرض مواقيت محفوظة — فشل التحديث.",
     "columns": {
-      "prayer": "الصلاة",
+      "name": "الصلاة",
       "adhan": "الأذان",
-      "iqamah": "الإقامة",
       "status": "الحالة"
     }
   },
@@ -77,5 +76,10 @@
     "theme": "المظهر",
     "light": "فاتح",
     "dark": "داكن"
+  },
+  "about": {
+    "title": "من نحن",
+    "madeBy": "من صنع {organization}، {developer}",
+    "github": "GitHub — InasAlSaabb"
   }
 }

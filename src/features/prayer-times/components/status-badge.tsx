@@ -16,12 +16,15 @@ type Props = {
 
 export function StatusBadge({ status }: Props) {
   const { colors } = useTheme();
-  const { t } = useI18n();
+  const { t, isRTL } = useI18n();
   const variant = variantFor(colors)[status];
 
   return (
     <View style={[styles.badge, { backgroundColor: variant.bg }]}>
-      <Text style={[styles.label, { color: variant.fg }]} numberOfLines={1}>
+      {/* Letter-spacing breaks Arabic letter joining, so it is Latin-only. */}
+      <Text
+        style={[styles.label, !isRTL && styles.labelTracked, { color: variant.fg }]}
+        numberOfLines={1}>
         {t(`status.${status}`)}
       </Text>
     </View>
@@ -29,8 +32,8 @@ export function StatusBadge({ status }: Props) {
 }
 
 const styles = StyleSheet.create({
+  // No alignSelf: the table column decides which edge the badge sits on.
   badge: {
-    alignSelf: "flex-start",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: radius.pill,
@@ -38,6 +41,8 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 10,
     fontWeight: "800",
+  },
+  labelTracked: {
     letterSpacing: 0.5,
   },
 });
