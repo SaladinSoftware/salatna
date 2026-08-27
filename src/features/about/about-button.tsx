@@ -1,6 +1,6 @@
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
-import { Modal, Pressable, Text, View } from "react-native";
+import { Modal, Pressable, Text } from "react-native";
 
 import { useI18n } from "@/features/i18n";
 import { radius, shadow, spacing, useThemedStyles, type Palette } from "@/theme";
@@ -12,23 +12,26 @@ export const CREDITS = {
   github: "https://github.com/InasAlSaabb",
 } as const;
 
-/** A quiet footer link; the credits themselves live in the sheet it opens. */
-export function AboutCard() {
+/** Info button for the header; the credits live in the sheet it opens. */
+export function AboutButton() {
   const styles = useThemedStyles(createStyles);
   const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <View style={styles.footer}>
+    <>
       <Pressable
         accessibilityRole="button"
+        accessibilityLabel={t("about.title")}
         onPress={() => setIsOpen(true)}
+        hitSlop={8}
         style={({ pressed }) => [styles.trigger, pressed && styles.pressed]}>
-        <Text style={styles.triggerText}>{t("about.title")}</Text>
+        {/* A plain letter, not ℹ️ — the emoji ignores the theme colours. */}
+        <Text style={styles.triggerGlyph}>i</Text>
       </Pressable>
 
       <AboutSheet isOpen={isOpen} onClose={() => setIsOpen(false)} />
-    </View>
+    </>
   );
 }
 
@@ -66,18 +69,21 @@ function AboutSheet({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 }
 
 const createStyles = (colors: Palette) => ({
-  footer: {
-    alignItems: "center" as const,
-    paddingTop: spacing.xl,
-  },
   trigger: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
+    width: 34,
+    height: 34,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    borderRadius: radius.pill,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  triggerText: {
-    fontSize: 13,
-    fontWeight: "600" as const,
-    color: colors.textFaint,
+  triggerGlyph: {
+    fontSize: 17,
+    fontWeight: "800" as const,
+    lineHeight: 20,
+    color: colors.textMuted,
   },
   pressed: {
     opacity: 0.6,

@@ -1,1 +1,1 @@
-export { AboutCard, CREDITS } from "./about-card";
+export { AboutButton, CREDITS } from "./about-button";

@@ -87,12 +87,12 @@ const createStyles = (colors: Palette) => ({
     fontSize: 12,
   },
   location: {
-    flexShrink: 1,
+    // Expands so the Change pill lands on the same edge as the weekday pill above.
+    flex: 1,
     fontSize: 14,
     color: colors.textMuted,
   },
   changeButton: {
-    marginHorizontal: spacing.xs,
     paddingHorizontal: spacing.md,
     paddingVertical: 4,
     borderRadius: radius.pill,

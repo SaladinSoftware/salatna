@@ -3,7 +3,7 @@ import { Image } from "expo-image";
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AboutCard } from "@/features/about";
+import { AboutButton } from "@/features/about";
 import { LanguageToggle, useI18n } from "@/features/i18n";
 import { useLocation } from "@/features/location";
 import { NextPrayerHero, PrayerTimesCard, usePrayerTimes } from "@/features/prayer-times";
@@ -52,11 +52,8 @@ export default function PrayerTimesScreen() {
           />
         }>
         <View style={content}>
+          {/* Logo and wordmark read as one unit; the lone action sits opposite. */}
           <View style={[styles.brandRow, rowDirection]}>
-            <View style={styles.brandBlock}>
-              <Text style={[styles.brand, { fontSize: scaled(28, scale) }]}>{t("app.brand")}</Text>
-              <Text style={styles.tagline}>{t("app.tagline")}</Text>
-            </View>
             {/* Decorative only — refreshing is handled by pull-to-refresh. */}
             <Image
               source={require("../../assets/images/logo-glow.png")}
@@ -64,6 +61,11 @@ export default function PrayerTimesScreen() {
               contentFit="contain"
               accessibilityIgnoresInvertColors
             />
+            <View style={styles.brandBlock}>
+              <Text style={[styles.brand, { fontSize: scaled(28, scale) }]}>{t("app.brand")}</Text>
+              <Text style={styles.tagline}>{t("app.tagline")}</Text>
+            </View>
+            <AboutButton />
           </View>
 
           <View style={[styles.toolbar, rowDirection, isWide && styles.toolbarWide]}>
@@ -99,8 +101,6 @@ export default function PrayerTimesScreen() {
               <PrayerTimesCard day={day} onChangeLocation={() => router.push("/pick-location")} />
             </>
           )}
-
-          <AboutCard />
         </View>
       </ScrollView>
     </SafeAreaView>
