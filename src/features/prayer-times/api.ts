@@ -25,12 +25,28 @@ export type Coordinates = {
   longitude: number;
 };
 
+type Options = {
+  /** "YYYY-MM-DD". Omitted, the service answers for its own idea of today. */
+  date?: string;
+  signal?: AbortSignal;
+};
+
+/** Local calendar date, `offsetDays` from today, as "YYYY-MM-DD". */
+export function localDate(offsetDays = 0): string {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
 export async function fetchPrayerTimes(
   { latitude, longitude }: Coordinates,
   location: string,
-  signal?: AbortSignal,
+  { date, signal }: Options = {},
 ): Promise<PrayerDay> {
-  const response = await fetch(`${BASE_URL}?lat=${latitude}&lng=${longitude}`, { signal });
+  const query = `lat=${latitude}&lng=${longitude}${date ? `&date=${date}` : ""}`;
+  const response = await fetch(`${BASE_URL}?${query}`, { signal });
   if (!response.ok) {
     throw new Error(`Request failed with status ${response.status}`);
   }
@@ -40,11 +56,12 @@ export async function fetchPrayerTimes(
     throw new Error("The prayer times service returned an error.");
   }
 
-  const { date, prayer_times } = json.data;
-
   return {
-    date,
+    date: json.data.date,
     location,
-    prayers: PRAYER_KEYS.map(({ name, key }) => ({ name, time24: prayer_times[key] })),
+    prayers: PRAYER_KEYS.map(({ name, key }) => ({
+      name,
+      time24: json.data.prayer_times[key],
+    })),
   };
 }

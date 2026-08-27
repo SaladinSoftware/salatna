@@ -20,7 +20,7 @@ import {
 
 export default function PrayerTimesScreen() {
   const { place, isLocating } = useLocation();
-  const { day, isLoading, isRefreshing, error, reload } = usePrayerTimes(
+  const { day, tomorrow, isLoading, isRefreshing, error, reload } = usePrayerTimes(
     place.coordinates,
     place.label,
   );
@@ -94,7 +94,7 @@ export default function PrayerTimesScreen() {
             <>
               {error && <Text style={styles.banner}>{t("home.staleBanner")}</Text>}
               <View style={{ marginTop: gutter }}>
-                <NextPrayerHero day={day} />
+                <NextPrayerHero day={day} tomorrow={tomorrow} />
               </View>
               <PrayerTimesCard day={day} onChangeLocation={() => router.push("/pick-location")} />
             </>

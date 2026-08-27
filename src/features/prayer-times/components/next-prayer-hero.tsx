@@ -16,20 +16,22 @@ import { useNow } from "../use-now";
 
 type Props = {
   day: PrayerDay;
+  /** Only read after Isha, when the countdown targets tomorrow's Fajr. */
+  tomorrow?: PrayerDay | null;
 };
 
 /**
  * The headline card: which prayer is next, at what time, and a live countdown.
  * The bar underneath fills across the gap since the previous prayer.
  */
-export function NextPrayerHero({ day }: Props) {
+export function NextPrayerHero({ day, tomorrow }: Props) {
   // One tick per second, so the countdown actually counts.
   const now = useNow(1000);
   const styles = useThemedStyles(createStyles);
   const { scale, isWide } = useLayout();
   const { t, isRTL } = useI18n();
 
-  const next = findNextPrayer(day.prayers, now);
+  const next = findNextPrayer(day.prayers, now, tomorrow?.prayers);
   if (!next) return null;
 
   const isDue = next.secondsAway <= 0;
