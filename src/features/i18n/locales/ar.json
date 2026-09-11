@@ -81,5 +81,17 @@
     "title": "من نحن",
     "madeBy": "من صنع {organization}، {developer}",
     "github": "GitHub — InasAlSaabb"
+  },
+  "notifications": {
+    "title": "{prayer}",
+    "body": "حان الآن وقت صلاة {prayer}.",
+    "settingsTitle": "تنبيهات الصلاة",
+    "settingsHint": "إشعار مع صوت عند كل أذان.",
+    "denied": "الإشعارات محظورة. فعّليها لتذكير من إعدادات جهازك.",
+    "needsDevBuild": "تنبيهات الصلاة تحتاج development build — غير متاحة في Expo Go على أندرويد.",
+    "batteryTitle": "خطوة أخيرة",
+    "batteryBody": "كتير أجهزة (سامسونغ، TECNO، شاومي وغيرها) بتوقف التطبيق بالخلفية وبتمنع الأذان من الاشتغال. افتحي الإعدادات، وحطّي البطارية على «بدون قيود» وفعّلي «التشغيل التلقائي».",
+    "batteryOpen": "افتح الإعدادات",
+    "batteryDismiss": "تمّ"
   }
 }

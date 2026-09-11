@@ -81,5 +81,17 @@
     "title": "About us",
     "madeBy": "Made by {organization}, {developer}",
     "github": "GitHub — InasAlSaabb"
+  },
+  "notifications": {
+    "title": "{prayer}",
+    "body": "It is time for {prayer} prayer.",
+    "settingsTitle": "Prayer alerts",
+    "settingsHint": "A notification with sound at each adhan.",
+    "denied": "Notifications are blocked. Enable them for Tazkir in your device settings.",
+    "needsDevBuild": "Prayer alerts need a development build — they are not available in Expo Go on Android.",
+    "batteryTitle": "One more step",
+    "batteryBody": "Many phones (Samsung, TECNO, Xiaomi and others) shut the app down in the background and block the adhan from firing. Open settings, then set Battery to Unrestricted and turn Auto-start on.",
+    "batteryOpen": "Open settings",
+    "batteryDismiss": "Done"
   }
 }

@@ -40,6 +40,22 @@ export function localDate(offsetDays = 0): string {
   return `${date.getFullYear()}-${month}-${day}`;
 }
 
+/**
+ * Today plus the following days, for scheduling ahead. Failures are dropped
+ * rather than thrown: a week with a hole in it still beats no week at all.
+ */
+export async function fetchUpcomingDays(
+  coordinates: Coordinates,
+  location: string,
+  days: number,
+  signal?: AbortSignal,
+): Promise<PrayerDay[]> {
+  const requests = Array.from({ length: days }, (_, offset) =>
+    fetchPrayerTimes(coordinates, location, { date: localDate(offset), signal }).catch(() => null),
+  );
+  return (await Promise.all(requests)).filter((day): day is PrayerDay => day !== null);
+}
+
 export async function fetchPrayerTimes(
   { latitude, longitude }: Coordinates,
   location: string,

@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { AboutButton } from "@/features/about";
 import { LanguageToggle, useI18n } from "@/features/i18n";
 import { useLocation } from "@/features/location";
+import { NotificationsCard, usePrayerNotifications } from "@/features/notifications";
 import { NextPrayerHero, PrayerTimesCard, usePrayerTimes } from "@/features/prayer-times";
 import {
   radius,
@@ -24,6 +25,7 @@ export default function PrayerTimesScreen() {
     place.coordinates,
     place.label,
   );
+  usePrayerNotifications(place.coordinates, place.label);
   const { colors } = useTheme();
   const { t, isRTL } = useI18n();
   const { gutter, scale, isWide, maxContentWidth } = useLayout();
@@ -99,6 +101,7 @@ export default function PrayerTimesScreen() {
                 <NextPrayerHero day={day} tomorrow={tomorrow} />
               </View>
               <PrayerTimesCard day={day} onChangeLocation={() => router.push("/pick-location")} />
+              <NotificationsCard />
             </>
           )}
         </View>
